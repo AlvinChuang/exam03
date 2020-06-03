@@ -38,7 +38,7 @@ int m_addr = FXOS8700CQ_SLAVE_ADDR1;
 int idR[32] = {0};
 int indexR = 0;
 
-float velocity[200];
+float velocity[200] = {0};
 
 void FXOS8700CQ_readRegs(int addr, uint8_t * data, int len);
 void FXOS8700CQ_writeRegs(uint8_t * data, int len);
@@ -79,8 +79,6 @@ void record(int index) {
    //sprintf(buff, "FXOS8700Q ACC: X=%f, Y=%f, Z=%f #%d", x * 1000.0, y * 1000.0, z * 1000.0, message_num);
 
    printf("%f\r\n", velocity[index]);
-
-
 }
 
 void initFXOS8700Q(void) {
@@ -146,6 +144,7 @@ int main(){
     queue_Acc.call(&record, i);
     wait(0.1);
   }
+  while (1) {wait(1.0);}
 }
 
 void xbee_rx_interrupt(void)
@@ -168,7 +167,7 @@ void xbee_rx(void)
     }
     RPC::call(buf, outbuf);
     pc.printf("%s\r\n", outbuf);
-    wait(0.1);
+    wait(0.001);
   }
   xbee.attach(xbee_rx_interrupt, Serial::RxIrq); // reattach interrupt
 }
@@ -198,31 +197,12 @@ void check_addr(char *xbee_reply, char *messenger){
 }
 
 void getAcc(Arguments *in, Reply *out) {
-  /* int16_t acc16;
-   float t[3];
-   uint8_t res[6];
-   FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
-
-   acc16 = (res[0] << 6) | (res[1] >> 2);
-   if (acc16 > UINT14_MAX/2)
-      acc16 -= UINT14_MAX;
-   t[0] = ((float)acc16) / 4096.0f;
-
-   acc16 = (res[2] << 6) | (res[3] >> 2);
-   if (acc16 > UINT14_MAX/2)
-      acc16 -= UINT14_MAX;
-   t[1] = ((float)acc16) / 4096.0f;
-
-   acc16 = (res[4] << 6) | (res[5] >> 2);
-   if (acc16 > UINT14_MAX/2)
-      acc16 -= UINT14_MAX;
-   t[2] = ((float)acc16) / 4096.0f;
-
-   pc.printf("FXOS8700Q ACC: X=%1.4f(%x%x) Y=%1.4f(%x%x) Z=%1.4f(%x%x)",\
-         t[0], res[0], res[1],\
-         t[1], res[2], res[3],\
-         t[2], res[4], res[5]\
-   );*/
+    //pc.printf("%f", velocity[1]);
+    for (int i = 0; i < 200; i++) {
+        xbee.printf("%f\n", velocity[i]);
+        pc.printf("%f\n", velocity[i]);
+        wait(0.1);
+    }
 }
 
 void getAddr(Arguments *in, Reply *out) {
