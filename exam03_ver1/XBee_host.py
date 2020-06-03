@@ -63,8 +63,8 @@ while num != 4:
 c = s.read(1)
 num = 0
 while num != 200:
-    #line = s.readline().decode()
-    line = s.read(1)
+    line = s.readline().decode()
+    #line = s.read(1)
     number_log.append(float(line))
     print(line)
     num += 1
